@@ -2,10 +2,6 @@
 
 A modern, interactive online quiz game built with HTML, CSS, and JavaScript. Test your knowledge with 10 general knowledge questions in a beautifully designed interface with real-time scoring and detailed answer review.
 
-![Quiz App](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-
 ## Features
 
 -  **Login Authentication** - Secure login system with form validation
@@ -71,6 +67,8 @@ Quiz app/
 - Web browser (Chrome, Firefox, Safari, Edge)
 
 ### Setup
+> [!IMPORTANT]
+> Because this application uses the `fetch` API to load JSON data, browser security policies (CORS) require it to be run on a local server. You cannot simply open the `index.html` file directly.
 
 1. **Clone the repository**
    ```bash
@@ -78,8 +76,16 @@ Quiz app/
    cd quiz-app
    ```
 
-2. **Open in browser**
-   Simply open the `index.html` file in your preferred web browser.
+2. **Run on a Local Server**
+
+   **Option A: Using VS Code Live Server (Recommended)**
+   - Install the "Live Server" extension in VS Code.
+   - Right-click `index.html` and select "Open with Live Server".
+
+   **Option B: Using Node.js http-server**
+   ```bash
+   npx http-server .
+   ```
 
 
 ##  Key Features Breakdown

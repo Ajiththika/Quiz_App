@@ -2,10 +2,10 @@
 // Global Variables & State Management
 // ===================================
 
-let questions = []; // Array to store all quiz questions
+let questions = new Map(); // Map to store all quiz questions
 let currentQuestionIndex = 0; // Track current question (0-based index)
 let score = 0; // Track user's score (calculated after submission)
-let userAnswers = []; // Store user's selected answers for each question
+let userAnswers = new Map(); // Store user's selected answers for each question
 let quizSubmitted = false; // Track if quiz has been submitted
 let reviewMode = false; // Track if in review all questions mode
 
@@ -91,9 +91,9 @@ function saveProgress() {
 
     const progress = {
         currentQuestionIndex: currentQuestionIndex,
-        userAnswers: userAnswers,
+        userAnswers: Array.from(userAnswers.values()),
         startTime: new Date().toISOString(),
-        questionsTotal: questions.length
+        questionsTotal: questions.size
     };
 
     localStorage.setItem('quizProgress', JSON.stringify(progress));
@@ -149,7 +149,7 @@ function updateStatistics(score, totalQuestions, userAnswers) {
     }
 
     // Calculate average
-    stats.averageScore = parseFloat((stats.totalCorrect / stats.totalQuestionsAnswered * questions.length).toFixed(2));
+    stats.averageScore = parseFloat((stats.totalCorrect / stats.totalQuestionsAnswered * questions.size).toFixed(2));
 
     // Track performance per question
     questions.forEach((question, index) => {
@@ -159,7 +159,7 @@ function updateStatistics(score, totalQuestions, userAnswers) {
 
         stats.questionPerformance[index].total++;
 
-        if (userAnswers[index] === question.correct) {
+        if (userAnswers.get(index) === question.correct) {
             stats.questionPerformance[index].correct++;
         } else {
             stats.questionPerformance[index].incorrect++;
@@ -289,130 +289,33 @@ function checkAuth() {
  * Load questions from embedded array (no server required)
  * Initialize quiz after successful load
  */
-function loadQuestions() {
+async function loadQuestions() {
     try {
-        // Questions embedded directly in JavaScript to work without server
-        questions = [
-            {
-                "question": "What does HTML stand for?",
-                "options": [
-                    "Hyper Text Markup Language",
-                    "High Tech Modern Language",
-                    "Home Tool Markup Language",
-                    "Hyperlinks and Text Markup Language"
-                ],
-                "correct": 0
-            },
-            {
-                "question": "Which CSS property is used to change the text color?",
-                "options": [
-                    "text-color",
-                    "font-color",
-                    "color",
-                    "text-style"
-                ],
-                "correct": 2
-            },
-            {
-                "question": "What is the correct syntax for referring to an external JavaScript file?",
-                "options": [
-                    "<script href='file.js'>",
-                    "<script name='file.js'>",
-                    "<script src='file.js'>",
-                    "<script file='file.js'>"
-                ],
-                "correct": 2
-            },
-            {
-                "question": "Which HTML tag is used to define an internal style sheet?",
-                "options": [
-                    "<css>",
-                    "<script>",
-                    "<style>",
-                    "<link>"
-                ],
-                "correct": 2
-            },
-            {
-                "question": "What does CSS stand for?",
-                "options": [
-                    "Computer Style Sheets",
-                    "Cascading Style Sheets",
-                    "Creative Style Sheets",
-                    "Colorful Style Sheets"
-                ],
-                "correct": 1
-            },
-            {
-                "question": "Which JavaScript method is used to select an element by its ID?",
-                "options": [
-                    "getElement()",
-                    "getElementById()",
-                    "selectElement()",
-                    "querySelector()"
-                ],
-                "correct": 1
-            },
-            {
-                "question": "What is the correct HTML element for inserting a line break?",
-                "options": [
-                    "<break>",
-                    "<lb>",
-                    "<br>",
-                    "<newline>"
-                ],
-                "correct": 2
-            },
-            {
-                "question": "Which property is used in CSS to change the background color?",
-                "options": [
-                    "bgcolor",
-                    "background-color",
-                    "color-background",
-                    "bg-color"
-                ],
-                "correct": 1
-            },
-            {
-                "question": "How do you declare a JavaScript variable?",
-                "options": [
-                    "variable name",
-                    "var name",
-                    "v name",
-                    "declare name"
-                ],
-                "correct": 1
-            },
-            {
-                "question": "Which HTML attribute specifies an alternate text for an image?",
-                "options": [
-                    "title",
-                    "alt",
-                    "src",
-                    "longdesc"
-                ],
-                "correct": 1
-            }
-        ];
+        const response = await fetch('questions.json');
+        if (!response.ok) {
+            throw new Error('Failed to load questions');
+        }
+        questions = new Map((await response.json()).map((q, i) => [i, q]));
 
-        totalQuestions.textContent = questions.length;
+        totalQuestions.textContent = questions.size;
 
-        // Initialize user answers array with null values
-        userAnswers = new Array(questions.length).fill(null);
+        // Initialize user answers map with null values
+        userAnswers = new Map();
+        questions.forEach((_, i) => userAnswers.set(i, null));
 
         // Apply saved preferences
         applyPreferences(getPreferences());
 
         // Check for saved progress
         const savedProgress = loadProgress();
-        if (savedProgress && savedProgress.questionsTotal === questions.length) {
+        if (savedProgress && savedProgress.questionsTotal === questions.size) {
             const resume = confirm(
                 '🔄 You have a saved quiz in progress. Would you like to resume where you left off?'
             );
 
             if (resume) {
                 currentQuestionIndex = savedProgress.currentQuestionIndex;
-                userAnswers = savedProgress.userAnswers;
+                userAnswers = new Map(savedProgress.userAnswers.map((a, i) => [i, a]));
             } else {
                 clearProgress();
             }
@@ -423,7 +326,7 @@ function loadQuestions() {
 
     } catch (error) {
         console.error('Error loading questions:', error);
-        questionText.textContent = 'Error loading quiz. Please refresh the page.';
+        questionText.textContent = 'Error loading quiz. Please ensure you are running this on a local server (e.g., Live Server) to load JSON files.';
     }
 }
 
@@ -437,10 +340,10 @@ function loadQuestions() {
  */
 function renderQuestion() {
     // Get current question object
-    const question = questions[currentQuestionIndex];
+    const question = questions.get(currentQuestionIndex);
 
     // Update question number and text
-    questionNumber.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+    questionNumber.textContent = `Question ${currentQuestionIndex + 1} of ${questions.size}`;
     questionText.textContent = question.question;
 
     // Clear previous options
@@ -463,7 +366,7 @@ function renderQuestion() {
             button.disabled = true;
 
             // Highlight the user's selected answer
-            if (index === userAnswers[currentQuestionIndex]) {
+            if (index === userAnswers.get(currentQuestionIndex)) {
                 button.classList.add('selected');
 
                 // Show correct or incorrect styling
@@ -482,7 +385,7 @@ function renderQuestion() {
             // Quiz not submitted - allow selection and editing
 
             // Highlight previously selected answer (if any)
-            if (index === userAnswers[currentQuestionIndex]) {
+            if (index === userAnswers.get(currentQuestionIndex)) {
                 button.classList.add('selected');
             }
 
@@ -512,7 +415,7 @@ function renderQuestion() {
  */
 function selectOption(selectedIndex) {
     // Store user's answer (allow changing answer)
-    userAnswers[currentQuestionIndex] = selectedIndex;
+    userAnswers.set(currentQuestionIndex, selectedIndex);
 
     // Update visual selection
     const optionButtons = document.querySelectorAll('.option-btn');
@@ -538,8 +441,8 @@ function selectOption(selectedIndex) {
  * Display feedback message after quiz submission
  */
 function showSubmittedFeedback() {
-    const question = questions[currentQuestionIndex];
-    const userAnswer = userAnswers[currentQuestionIndex];
+    const question = questions.get(currentQuestionIndex);
+    const userAnswer = userAnswers.get(currentQuestionIndex);
 
     if (userAnswer === null) {
         feedbackMessage.textContent = 'Not answered';
@@ -561,7 +464,7 @@ function showSubmittedFeedback() {
  * Navigate to next question or show review
  */
 function nextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < questions.size - 1) {
         currentQuestionIndex++;
         renderQuestion();
     } else {
@@ -600,7 +503,7 @@ function updateNavigationButtons() {
         // After submission, just navigate
         prevBtn.style.display = 'inline-block';
         nextBtn.style.display = 'inline-block';
-        if (currentQuestionIndex === questions.length - 1) {
+        if (currentQuestionIndex === questions.size - 1) {
             nextBtn.disabled = true;
         } else {
             nextBtn.disabled = false;
@@ -610,7 +513,7 @@ function updateNavigationButtons() {
         // Before submission
         prevBtn.style.display = 'inline-block';
         nextBtn.style.display = 'inline-block';
-        if (currentQuestionIndex === questions.length - 1) {
+        if (currentQuestionIndex === questions.size - 1) {
             nextBtn.textContent = 'Review All Questions';
         } else {
             nextBtn.textContent = 'Next ➡';
@@ -643,7 +546,7 @@ function showReviewAllQuestions() {
         questionCard.className = 'review-item';
         questionCard.style.cssText = `
       background: white;
-      border: 2px solid ${userAnswers[index] !== null ? '#10B981' : '#E5E7EB'};
+      border: 2px solid ${userAnswers.get(index) !== null ? '#10B981' : '#E5E7EB'};
       border-radius: 0.75rem;
       padding: 1rem;
       margin-bottom: 1rem;
@@ -656,7 +559,7 @@ function showReviewAllQuestions() {
             questionCard.style.transform = 'translateX(4px)';
         };
         questionCard.onmouseout = () => {
-            questionCard.style.borderColor = userAnswers[index] !== null ? '#10B981' : '#E5E7EB';
+            questionCard.style.borderColor = userAnswers.get(index) !== null ? '#10B981' : '#E5E7EB';
             questionCard.style.transform = 'translateX(0)';
         };
 
@@ -680,7 +583,7 @@ function showReviewAllQuestions() {
     `;
 
         const statusBadge = document.createElement('div');
-        if (userAnswers[index] !== null) {
+        if (userAnswers.get(index) !== null) {
             statusBadge.innerHTML = '<span style="background: #D1FAE5; color: #10B981; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">✓ Answered</span>';
         } else {
             statusBadge.innerHTML = '<span style="background: #FEE2E2; color: #EF4444; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">⚠ Not Answered</span>';
@@ -690,12 +593,12 @@ function showReviewAllQuestions() {
         questionHeader.appendChild(statusBadge);
         questionCard.appendChild(questionHeader);
 
-        if (userAnswers[index] !== null) {
+        if (userAnswers.get(index) !== null) {
             const selectedAnswer = document.createElement('div');
             selectedAnswer.style.cssText = 'background: #EFF6FF; padding: 0.75rem; border-radius: 0.5rem; margin-top: 0.5rem; border-left: 3px solid #3B82F6;';
             selectedAnswer.innerHTML = `
         <div style="color: #6B7280; font-size: 0.85rem; margin-bottom: 0.25rem;">Your Answer:</div>
-        <div style="color: #1F2937; font-weight: 500;">${question.options[userAnswers[index]]}</div>
+        <div style="color: #1F2937; font-weight: 500;">${question.options[userAnswers.get(index)]}</div>
       `;
             questionCard.appendChild(selectedAnswer);
         }
@@ -712,7 +615,7 @@ function showReviewAllQuestions() {
     const submitButtonContainer = document.createElement('div');
     submitButtonContainer.style.cssText = 'margin-top: 2rem; text-align: center;';
 
-    const unanswered = userAnswers.filter(answer => answer === null).length;
+    const unanswered = Array.from(userAnswers.values()).filter(answer => answer === null).length;
 
     if (unanswered > 0) {
         const warningMessage = document.createElement('div');
@@ -745,7 +648,7 @@ function submitQuiz() {
     // Calculate score
     score = 0;
     questions.forEach((question, index) => {
-        if (userAnswers[index] === question.correct) {
+        if (userAnswers.get(index) === question.correct) {
             score++;
         }
     });
@@ -758,10 +661,10 @@ function submitQuiz() {
     scoreDisplay.textContent = score;
 
     // Save quiz result to history
-    saveQuizResult(score, questions.length, userAnswers);
+    saveQuizResult(score, questions.size, Array.from(userAnswers.values()));
 
     // Update statistics
-    updateStatistics(score, questions.length, userAnswers);
+    updateStatistics(score, questions.size, userAnswers);
 
     // Clear saved progress (quiz is complete)
     clearProgress();
@@ -785,10 +688,10 @@ function showResults() {
     resultsSection.classList.add('show');
 
     // Display final score
-    finalScore.textContent = `${score}/${questions.length}`;
+    finalScore.textContent = `${score}/${questions.size}`;
 
     // Generate result message based on score
-    const percentage = (score / questions.length) * 100;
+    const percentage = (score / questions.size) * 100;
 
     if (percentage === 100) {
         resultMessage.textContent = '🏆 Perfect Score! You\'re a Web Development Master!';
@@ -818,7 +721,7 @@ function generateReview() {
 
     questions.forEach((question, index) => {
         const reviewItem = document.createElement('div');
-        const userAnswerIndex = userAnswers[index];
+        const userAnswerIndex = userAnswers.get(index);
         const isCorrect = userAnswerIndex === question.correct;
 
         reviewItem.className = `review-item ${isCorrect ? 'correct-review' : 'incorrect-review'}`;
@@ -854,7 +757,8 @@ function restartQuiz() {
     // Reset state variables
     currentQuestionIndex = 0;
     score = 0;
-    userAnswers = new Array(questions.length).fill(null);
+    userAnswers = new Map();
+    questions.forEach((_, i) => userAnswers.set(i, null));
     quizSubmitted = false;
     reviewMode = false;
 
