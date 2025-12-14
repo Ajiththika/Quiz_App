@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Take the quiz and test your knowledge">
+    <title>Quiz App - Take Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">🎯 Quiz App</a>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="quiz.html" class="nav-link active">Take Quiz</a></li>
+                <li><a href="statistics.html" class="nav-link">Statistics</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="login.html" class="nav-link">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-narrow" style="margin-top: 2rem;">
+        <div class="card">
+            <!-- Quiz Header with Score and Logout -->
+            <div class="quiz-header">
+                <div class="score">
+                    Score: <span id="scoreDisplay">0</span>/<span id="totalQuestions">10</span>
+                </div>
+                <button class="btn btn-secondary logout-btn" id="logoutBtn">Logout</button>
+            </div>
+
+            <!-- Quiz Section (visible during quiz) -->
+            <div id="quizSection">
+                <!-- Question Container -->
+                <div class="question-container">
+                    <div class="question-number" id="questionNumber">Question 1 of 10</div>
+                    <h3 class="question-text" id="questionText">Loading question...</h3>
+                </div>
+
+                <!-- Options Container -->
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be dynamically generated here -->
+                </div>
+
+                <!-- Feedback Message -->
+                <div class="feedback-message" id="feedbackMessage">
+                    Feedback will appear here
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="navigation-buttons">
+                    <button class="btn btn-secondary" id="prevBtn">⬅ Previous</button>
+                    <button class="btn btn-primary" id="nextBtn">Next ➡</button>
+                </div>
+            </div>
+
+            <!-- Results Section (hidden initially) -->
+            <div class="results-section" id="resultsSection">
+                <h2>🎉 Quiz Completed!</h2>
+                <div class="final-score" id="finalScore">0/10</div>
+                <p id="resultMessage">Great job!</p>
+
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="restartBtn">🔄 Restart Quiz</button>
+                    <button class="btn btn-secondary" id="viewReviewBtn">📝 View Answers</button>
+                </div>
+
+                <!-- Answer Review Section -->
+                <div class="review-section hidden" id="reviewSection">
+                    <h3>📝 Answer Review</h3>
+                    <div id="reviewContainer">
+                        <!-- Review items will be dynamically generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2024 Quiz App. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        navToggle.addEventListener('click', () => navMenu.classList.toggle('active'));
+    </script>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+
+</html>

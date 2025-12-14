@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your quiz statistics and performance history">
+    <title>Quiz App - Statistics</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .history-table th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .history-table tr:hover {
+            background: #F9FAFB;
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .score-perfect {
+            background: #D1FAE5;
+            color: #10B981;
+        }
+
+        .score-good {
+            background: #DBEAFE;
+            color: #3B82F6;
+        }
+
+        .score-average {
+            background: #FEF3C7;
+            color: #F59E0B;
+        }
+
+        .score-poor {
+            background: #FEE2E2;
+            color: #EF4444;
+        }
+
+        .delete-btn {
+            background: #FEE2E2;
+            color: #EF4444;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+
+        .delete-btn:hover {
+            background: #EF4444;
+            color: white;
+        }
+
+        .progress-bar {
+            height: 1.5rem;
+            background: #E5E7EB;
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10B981, #3B82F6);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .question-stats {
+            margin-top: 2rem;
+        }
+
+        .question-stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            border: 2px solid #E5E7EB;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">🎯 Quiz App</a>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="quiz.html" class="nav-link">Take Quiz</a></li>
+                <li><a href="statistics.html" class="nav-link active">Statistics</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="login.html" class="nav-btn">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>📊 Your Statistics</h1>
+        <p class="text-center" style="margin-bottom: 2rem;">Track your quiz performance and improvement over time</p>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Quiz History Section -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0;">Quiz History</h2>
+                <button class="btn btn-secondary" id="clearHistoryBtn">Clear All History</button>
+            </div>
+
+            <div id="historyContainer">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Question Performance Section -->
+        <div class="card question-stats" id="questionPerformance" style="display: none;">
+            <h2>Question Performance</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                See which questions you answer correctly most often
+            </p>
+            <div id="questionStatsContainer">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2024 Quiz App. All rights reserved. Built with passion for learning.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        navToggle.addEventListener('click', () => navMenu.classList.toggle('active'));
+
+        // Get localStorage data
+        function getStatistics() {
+            const saved = localStorage.getItem('quizStats');
+            return saved ? JSON.parse(saved) : {
+                totalQuizzes: 0,
+                totalQuestionsAnswered: 0,
+                totalCorrect: 0,
+                totalIncorrect: 0,
+                averageScore: 0,
+                bestScore: 0,
+                worstScore: 0,
+                questionPerformance: {}
+            };
+        }
+
+        function getQuizHistory() {
+            return JSON.parse(localStorage.getItem('quizHistory') || '[]');
+        }
+
+        function deleteQuizResult(id) {
+            const history = getQuizHistory();
+            const filtered = history.filter(item => item.id !== id);
+            localStorage.setItem('quizHistory', JSON.stringify(filtered));
+
+            // Recalculate statistics
+            recalculateStatistics(filtered);
+
+            loadStatistics();
+        }
+
+        function recalculateStatistics(history) {
+            if (history.length === 0) {
+                localStorage.removeItem('quizStats');
+                return;
+            }
+
+            const stats = {
+                totalQuizzes: history.length,
+                totalQuestionsAnswered: 0,
+                totalCorrect: 0,
+                totalIncorrect: 0,
+                averageScore: 0,
+                bestScore: 0,
+                worstScore: Infinity,
+                questionPerformance: {}
+            };
+
+            history.forEach(result => {
+                stats.totalQuestionsAnswered += result.total;
+                stats.totalCorrect += result.score;
+                stats.totalIncorrect += (result.total - result.score);
+
+                if (result.score > stats.bestScore) stats.bestScore = result.score;
+                if (result.score < stats.worstScore) stats.worstScore = result.score;
+            });
+
+            stats.averageScore = parseFloat((stats.totalCorrect / stats.totalQuestionsAnswered * 10).toFixed(2));
+            if (stats.worstScore === Infinity) stats.worstScore = 0;
+
+            localStorage.setItem('quizStats', JSON.stringify(stats));
+        }
+
+        function clearAllHistory() {
+            if (confirm('⚠️ Are you sure you want to clear all quiz history and statistics? This cannot be undone.')) {
+                localStorage.removeItem('quizHistory');
+                localStorage.removeItem('quizStats');
+                loadStatistics();
+            }
+        }
+
+        function getScoreBadgeClass(percentage) {
+            if (percentage === 100) return 'score-perfect';
+            if (percentage >= 70) return 'score-good';
+            if (percentage >= 50) return 'score-average';
+            return 'score-poor';
+        }
+
+        function loadStatistics() {
+            const stats = getStatistics();
+            const history = getQuizHistory().reverse(); // Show newest first
+
+            // Load statistics cards
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">Total Quizzes</div>
+          <div class="stat-value">${stats.totalQuizzes}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Average Score</div>
+          <div class="stat-value">${stats.averageScore.toFixed(1)}/10</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Best Score</div>
+          <div class="stat-value">${stats.bestScore}/10</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-value">${stats.totalQuestionsAnswered > 0 ? Math.round((stats.totalCorrect / stats.totalQuestionsAnswered) * 100) : 0}%</div>
+        </div>
+      `;
+
+            // Load quiz history
+            const historyContainer = document.getElementById('historyContainer');
+
+            if (history.length === 0) {
+                historyContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <h3>No Quiz History Yet</h3>
+            <p>Take your first quiz to see your statistics here!</p>
+            <a href="quiz.html" class="btn btn-primary" style="margin-top: 1rem;">Start Quiz</a>
+          </div>
+        `;
+            } else {
+                historyContainer.innerHTML = `
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Score</th>
+                <th>Percentage</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${history.map(result => `
+                <tr>
+                  <td>${result.date}</td>
+                  <td>${result.time}</td>
+                  <td><strong>${result.score}/${result.total}</strong></td>
+                  <td>
+                    <span class="score-badge ${getScoreBadgeClass(result.percentage)}">
+                      ${result.percentage}%
+                    </span>
+                  </td>
+                  <td>
+                    <button class="delete-btn" onclick="deleteQuizResult('${result.id}')">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+            }
+
+            // Load question performance if available
+            if (Object.keys(stats.questionPerformance).length > 0) {
+                document.getElementById('questionPerformance').style.display = 'block';
+                const questionStatsContainer = document.getElementById('questionStatsContainer');
+
+                let questionHTML = '';
+                Object.keys(stats.questionPerformance).forEach(index => {
+                    const perf = stats.questionPerformance[index];
+                    const successRate = Math.round((perf.correct / perf.total) * 100);
+
+                    questionHTML += `
+            <div class="question-stat-item">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <strong>Question ${parseInt(index) + 1}</strong>
+                <span>${perf.correct}/${perf.total} correct (${successRate}%)</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${successRate}%">
+                  ${successRate}%
+                </div>
+              </div>
+            </div>
+          `;
+                });
+
+                questionStatsContainer.innerHTML = questionHTML;
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
+
+        // Load statistics on page load
+        loadStatistics();
+    </script>
+</body>
+
+</html>

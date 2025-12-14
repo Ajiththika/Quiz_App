@@ -1,0 +1,102 @@
+[
+  {
+    "question": "What does HTML stand for?",
+    "options": [
+      "Hyper Text Markup Language",
+      "High Tech Modern Language",
+      "Home Tool Markup Language",
+      "Hyperlinks and Text Markup Language"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Which CSS property is used to change the text color?",
+    "options": [
+      "text-color",
+      "font-color",
+      "color",
+      "text-style"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "What is the correct syntax for referring to an external JavaScript file?",
+    "options": [
+      "<script href='file.js'>",
+      "<script name='file.js'>",
+      "<script src='file.js'>",
+      "<script file='file.js'>"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Which HTML tag is used to define an internal style sheet?",
+    "options": [
+      "<css>",
+      "<script>",
+      "<style>",
+      "<link>"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "What does CSS stand for?",
+    "options": [
+      "Computer Style Sheets",
+      "Cascading Style Sheets",
+      "Creative Style Sheets",
+      "Colorful Style Sheets"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Which JavaScript method is used to select an element by its ID?",
+    "options": [
+      "getElement()",
+      "getElementById()",
+      "selectElement()",
+      "querySelector()"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "What is the correct HTML element for inserting a line break?",
+    "options": [
+      "<break>",
+      "<lb>",
+      "<br>",
+      "<newline>"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Which property is used in CSS to change the background color?",
+    "options": [
+      "bgcolor",
+      "background-color",
+      "color-background",
+      "bg-color"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "How do you declare a JavaScript variable?",
+    "options": [
+      "variable name",
+      "var name",
+      "v name",
+      "declare name"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Which HTML attribute specifies an alternate text for an image?",
+    "options": [
+      "title",
+      "alt",
+      "src",
+      "longdesc"
+    ],
+    "correct": 1
+  }
+]

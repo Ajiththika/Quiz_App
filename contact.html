@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact us for support or feedback">
+    <title>Quiz App - Contact Us</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">🎯 Quiz App</a>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="quiz.html" class="nav-link">Take Quiz</a></li>
+                <li><a href="statistics.html" class="nav-link">Statistics</a></li>
+                <li><a href="contact.html" class="nav-link active">Contact</a></li>
+                <li><a href="login.html" class="nav-btn">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="text-center mb-4" style="margin-top: 3rem;">
+            <h1>Get in Touch</h1>
+            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Have questions, feedback, or suggestions? We'd love to hear from you!
+                Fill out the form below and we'll get back to you as soon as possible.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem;">
+            <!-- Contact Form -->
+            <div class="card">
+                <h2>Send us a Message</h2>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" class="form-control" placeholder="email@example.com"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <input type="text" id="subject" class="form-control" placeholder="What is this about?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" class="form-control" placeholder="Tell us more..." rows="5"
+                            required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        📧 Send Message
+                    </button>
+
+                    <div class="msg" id="formMessage"></div>
+                </form>
+            </div>
+
+            <!-- Contact Information -->
+            <div>
+                <div class="card mb-3">
+                    <h3>📍 Contact Information</h3>
+                    <p style="margin-bottom: 1rem;">
+                        <strong>Email:</strong><br>
+                        <a href="mailto:support@quizmaster.com"
+                            style="color: var(--primary-color); text-decoration: none;">
+                            ajiththika17@gmail.com
+                        </a>
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        <strong>Response Time:</strong><br>
+                        We typically respond within 24-48 hours
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Available:</strong><br>
+                        Monday - Friday, 9:00 AM - 5:00 PM EST
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>💡 Frequently Asked Questions</h3>
+                    <details style="margin-bottom: 1rem;">
+                        <summary
+                            style="cursor: pointer; font-weight: 600; color: var(--text-primary); padding: 0.5rem 0;">
+                            How do I reset my password?
+                        </summary>
+                        <p style="padding-left: 1rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Simply create a new password meeting all requirements on the login page.
+                            Your session uses localStorage for demo purposes.
+                        </p>
+                    </details>
+
+                    <details style="margin-bottom: 1rem;">
+                        <summary
+                            style="cursor: pointer; font-weight: 600; color: var(--text-primary); padding: 0.5rem 0;">
+                            Can I retake the quiz?
+                        </summary>
+                        <p style="padding-left: 1rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Yes! You can retake the quiz as many times as you want by clicking the "Restart Quiz"
+                            button.
+                        </p>
+                    </details>
+
+                    <details>
+                        <summary
+                            style="cursor: pointer; font-weight: 600; color: var(--text-primary); padding: 0.5rem 0;">
+                            How is my score calculated?
+                        </summary>
+                        <p style="padding-left: 1rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Your score is calculated based on the number of correct answers out of 10 total questions.
+                            Each correct answer is worth 1 point.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2024 Quiz App. All rights reserved. Built with passion for learning.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        navToggle.addEventListener('click', () => navMenu.classList.toggle('active'));
+
+        // Contact Form Submission
+        const contactForm = document.getElementById('contactForm');
+        const formMessage = document.getElementById('formMessage');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            // Validate all fields
+            if (!name || !email || !subject || !message) {
+                formMessage.textContent = '⚠️ Please fill in all required fields';
+                formMessage.style.color = 'var(--error-color)';
+                formMessage.style.background = '#FEE2E2';
+                formMessage.style.padding = '0.75rem';
+                formMessage.style.borderRadius = 'var(--radius-md)';
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                formMessage.textContent = '⚠️ Please enter a valid email address';
+                formMessage.style.color = 'var(--error-color)';
+                formMessage.style.background = '#FEE2E2';
+                formMessage.style.padding = '0.75rem';
+                formMessage.style.borderRadius = 'var(--radius-md)';
+                return;
+            }
+
+            // Simulate form submission (in real app, this would send to server)
+            const formData = {
+                name,
+                email,
+                subject,
+                message,
+                timestamp: new Date().toLocaleString()
+            };
+
+            // Store in localStorage for demo purposes
+            const contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            contacts.push(formData);
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+
+            // Show success message
+            formMessage.textContent = '✓ Message sent successfully! We\'ll get back to you soon.';
+            formMessage.style.color = 'var(--success-color)';
+            formMessage.style.background = '#D1FAE5';
+            formMessage.style.padding = '0.75rem';
+            formMessage.style.borderRadius = 'var(--radius-md)';
+
+            // Reset form
+            contactForm.reset();
+
+            // Clear success message after 5 seconds
+            setTimeout(() => {
+                formMessage.textContent = '';
+                formMessage.style.background = 'transparent';
+                formMessage.style.padding = '0';
+            }, 5000);
+        });
+
+        // Clear error messages on input
+        const inputs = contactForm.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                formMessage.textContent = '';
+                formMessage.style.background = 'transparent';
+                formMessage.style.padding = '0';
+            });
+        });
+    </script>
+</body>
+
+</html>

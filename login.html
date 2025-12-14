@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to start your quiz">
+    <title>Quiz App - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">🎯 Quiz App</a>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="quiz.html" class="nav-link">Take Quiz</a></li>
+                <li><a href="statistics.html" class="nav-link">Statistics</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="login.html" class="nav-link active">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-narrow">
+        <div class="card" style="margin-top: 3rem;">
+            <h2>Welcome Back!</h2>
+            <p class="text-center">Please login to start your quiz adventure</p>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Enter username (min 3 characters)"
+                    autocomplete="username">
+            </div>
+
+            <div class="form-group password-wrap">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter password"
+                    autocomplete="current-password">
+                <span class="eye" id="togglePass">Show</span>
+            </div>
+
+            <div class="requirements" id="reqBox" style="display:none;">
+                <p id="ruleLength">✓ Length 6+</p>
+                <p id="ruleUpper">✓ Uppercase letter</p>
+                <p id="ruleNumber">✓ Number</p>
+                <p id="ruleSpecial">✓ Special character</p>
+            </div>
+
+            <button id="loginBtn" class="btn btn-primary btn-block mt-2">Login</button>
+            <div class="msg" id="message"></div>
+
+            <p class="text-center mt-3" style="font-size: 0.9rem;">
+                Don't have an account? Just create a secure password meeting all requirements above.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2024 Quiz App. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        navToggle.addEventListener('click', () => navMenu.classList.toggle('active'));
+
+        // Login Logic
+        const password = document.getElementById('password');
+        const togglePass = document.getElementById('togglePass');
+        const reqBox = document.getElementById('reqBox');
+        const message = document.getElementById('message');
+
+        const ruleLength = document.getElementById('ruleLength');
+        const ruleUpper = document.getElementById('ruleUpper');
+        const ruleNumber = document.getElementById('ruleNumber');
+        const ruleSpecial = document.getElementById('ruleSpecial');
+
+        // Toggle password visibility
+        togglePass.onclick = () => {
+            if (password.type === 'password') {
+                password.type = 'text';
+                togglePass.textContent = 'Hide';
+            } else {
+                password.type = 'password';
+                togglePass.textContent = 'Show';
+            }
+        };
+
+        // Show requirements when password field is focused
+        password.onfocus = () => {
+            reqBox.style.display = 'block';
+        };
+
+        // Validate password on input
+        password.oninput = () => {
+            validatePassword();
+        };
+
+        function validatePassword() {
+            const passValue = password.value;
+
+            updateRule(ruleLength, passValue.length >= 6);
+            updateRule(ruleUpper, /[A-Z]/.test(passValue));
+            updateRule(ruleNumber, /[0-9]/.test(passValue));
+            updateRule(ruleSpecial, /[^A-Za-z0-9]/.test(passValue));
+
+            return (
+                passValue.length >= 6 &&
+                /[A-Z]/.test(passValue) &&
+                /[0-9]/.test(passValue) &&
+                /[^A-Za-z0-9]/.test(passValue)
+            );
+        }
+
+        function updateRule(element, condition) {
+            if (condition) {
+                element.classList.add('valid');
+                element.classList.remove('invalid');
+            } else {
+                element.classList.add('invalid');
+                element.classList.remove('valid');
+            }
+        }
+
+        // Handle login
+        document.getElementById('loginBtn').onclick = () => {
+            const username = document.getElementById('username').value.trim();
+
+            if (username.length < 3) {
+                message.textContent = 'Username must be at least 3 characters';
+                message.style.color = 'var(--error-color)';
+                message.style.background = '#FEE2E2';
+                message.style.padding = '0.75rem';
+                message.style.borderRadius = 'var(--radius-md)';
+                return;
+            }
+
+            if (!validatePassword()) {
+                message.textContent = 'Password does not meet all requirements';
+                message.style.color = 'var(--error-color)';
+                message.style.background = '#FEE2E2';
+                message.style.padding = '0.75rem';
+                message.style.borderRadius = 'var(--radius-md)';
+                return;
+            }
+
+            const loginData = {
+                username,
+                password: password.value,
+                time: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('quizUsername', username);
+            localStorage.setItem('loginInfo', JSON.stringify(loginData));
+
+            message.textContent = '✓ Login successful! Redirecting...';
+            message.style.color = 'var(--success-color)';
+            message.style.background = '#D1FAE5';
+            message.style.padding = '0.75rem';
+            message.style.borderRadius = 'var(--radius-md)';
+
+            // Redirect to quiz after short delay
+            setTimeout(() => {
+                window.location.href = 'quiz.html';
+            }, 1000);
+        };
+    </script>
+</body>
+
+</html>
