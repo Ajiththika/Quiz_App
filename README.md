@@ -21,7 +21,7 @@ A modern, interactive online quiz game built with HTML, CSS, and JavaScript. Tes
 
 ## Live Demo
 
-Visit the live application: [Your GitHub Pages URL]
+Visit the live application: https://ajiththika.github.io/Quiz_App/
 
 ## Technologies Used
 
